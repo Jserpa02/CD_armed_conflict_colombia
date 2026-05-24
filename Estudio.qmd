@@ -1,5 +1,5 @@
 ---
-title: "Trabajo Final Corte 2"
+title: "Trabajo Final Programación para Ciencia de Datos"
 author: ""
 format:
   dashboard:
@@ -7,7 +7,7 @@ format:
     embed-resources: true
     nav-buttons:
       - icon: github
-        href: https://terridata.dnp.gov.co/index-app.html#/descargas
+        href: https://github.com/Jserpa02/CD_armed_conflict_colombia.git
     include-in-header:
       text: |
         <style>

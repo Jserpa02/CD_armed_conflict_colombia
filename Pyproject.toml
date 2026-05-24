@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "analizador"
+version = "0.1.0"
+description = "Librería modular de análisis estadístico exploratorio para datasets CSV y Excel."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+
+authors = [
+    { name = "Juan Diego Serpa Medina" },
+]
+
+keywords = ["estadística", "análisis exploratorio", "pandas", "matplotlib", "EDA"]
+
+dependencies = [
+    "pandas>=1.5",
+    "numpy>=1.23",
+    "matplotlib>=3.6",
+    "openpyxl>=3.0",
+]
+
+[project.urls]
+Repository = "https://github.com/Jserpa02/CD_armed_conflict_colombia.git"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["analizador*"]
