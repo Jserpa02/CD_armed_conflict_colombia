@@ -1,0 +1,278 @@
+/* ══════════════════════════════════════════════════════
+   UTB Dashboard – Identidad Visual Oficial
+   Colores: Esmeralda, Verde, Celeste, Acuamarina, Azul UTB
+   ══════════════════════════════════════════════════════ */
+
+:root {
+    --utb-esmeralda:   #64ED2A;
+    --utb-verde-savio: #12D191;
+    --utb-verde:       #117C4A;
+    --utb-celeste:     #1BB9EB;
+    --utb-acuamarina:  #00A3A1;
+    --utb-azul:        #091ECF;
+    --utb-blanco:      #FFFFFF;
+    --utb-negro:       #0F0F0F;
+    --bg-deep:         #05091a;
+    --bg-dark:         #080f2a;
+    --bg-card:         #0b1535;
+    --bg-card2:        #0e1c42;
+    --bg-header:       #0a1530;
+    --border:          #0e2060;
+    --text-main:       #d0eeff;
+    --text-muted:      #7eb8d4;
+}
+
+/* ── 1. FONDO GLOBAL ── */
+body,
+.quarto-dashboard,
+main,
+.tab-content,
+.tab-pane,
+.dashboard-fill,
+.bslib-page-fill,
+.html-fill-container,
+.html-fill-item,
+.quarto-dashboard .row,
+.dashboard-row,
+.bslib-grid,
+.bslib-gap-spacing {
+    background-color: var(--bg-deep) !important;
+    color: var(--text-main) !important;
+}
+
+/* ── 2. NAVBAR ── */
+.navbar,
+.navbar.bg-dark,
+.navbar-default,
+nav.navbar {
+    background: linear-gradient(90deg, var(--bg-deep) 0%, var(--bg-dark) 50%, #091ECF22 100%) !important;
+    border-bottom: 2px solid var(--utb-azul) !important;
+    box-shadow: 0 2px 20px rgba(9,30,207,0.35) !important;
+}
+
+.navbar .navbar-brand,
+.navbar-brand,
+.navbar-title {
+    color: var(--utb-celeste) !important;
+    font-weight: 800 !important;
+    font-size: 1.1rem !important;
+    letter-spacing: 0.03em !important;
+}
+
+.navbar-nav .nav-link,
+.navbar-nav > li > a {
+    color: var(--text-main) !important;
+    font-weight: 500 !important;
+    transition: all 0.2s !important;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--utb-esmeralda) !important;
+    background-color: rgba(100,237,42,0.08) !important;
+    border-radius: 6px !important;
+}
+
+.navbar-nav .nav-link.active,
+.navbar-nav > li.active > a {
+    color: var(--utb-esmeralda) !important;
+    background-color: rgba(100,237,42,0.12) !important;
+    border-radius: 6px !important;
+    font-weight: 700 !important;
+}
+
+.navbar .quarto-navbar-tools .bi,
+.navbar .nav-item .nav-link .bi {
+    color: var(--utb-celeste) !important;
+}
+
+/* ── 3. SUBTABS ── */
+.nav-tabs,
+.panel-tabset .nav-tabs {
+    border-bottom: 2px solid var(--border) !important;
+    background-color: var(--bg-deep) !important;
+    padding: 0 0.5rem !important;
+}
+
+.nav-tabs .nav-link,
+.panel-tabset .nav-tabs .nav-link {
+    color: var(--text-muted) !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-bottom: 3px solid transparent !important;
+    border-radius: 0 !important;
+    font-weight: 500 !important;
+    padding: 0.65rem 1.2rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.nav-tabs .nav-link:hover,
+.panel-tabset .nav-tabs .nav-link:hover {
+    color: var(--utb-celeste) !important;
+    background-color: rgba(27,185,235,0.08) !important;
+    border-bottom: 3px solid var(--utb-celeste) !important;
+}
+
+.nav-tabs .nav-link.active,
+.panel-tabset .nav-tabs .nav-link.active {
+    color: var(--utb-esmeralda) !important;
+    background-color: var(--bg-card) !important;
+    border-bottom: 3px solid var(--utb-esmeralda) !important;
+    font-weight: 700 !important;
+}
+
+/* ── 4. CARDS ── */
+.card,
+.bslib-card,
+.card.bslib-card {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 4px 20px rgba(9,30,207,0.2) !important;
+    color: var(--text-main) !important;
+}
+
+.card-header,
+.bslib-card .card-header,
+.card > .card-header {
+    background: linear-gradient(90deg, var(--bg-header) 0%, #0a1f50 100%) !important;
+    border-bottom: 1px solid var(--utb-acuamarina) !important;
+    color: var(--utb-celeste) !important;
+    font-weight: 700 !important;
+    font-size: 0.88rem !important;
+    letter-spacing: 0.02em !important;
+    border-radius: 14px 14px 0 0 !important;
+}
+
+.card-body,
+.bslib-card .card-body {
+    background-color: var(--bg-card) !important;
+    color: var(--text-main) !important;
+}
+
+/* ── 5. TABLAS ── */
+table,
+.dataframe,
+.table,
+table.dataframe {
+    background-color: var(--bg-card) !important;
+    color: var(--text-main) !important;
+    border-collapse: collapse !important;
+    width: 100% !important;
+    font-size: 0.87rem !important;
+}
+
+table thead th,
+.dataframe thead th,
+.table thead th {
+    background: linear-gradient(90deg, #091ECF33 0%, #00A3A122 100%) !important;
+    color: var(--utb-celeste) !important;
+    border: 1px solid var(--border) !important;
+    padding: 0.6rem 1rem !important;
+    font-weight: 700 !important;
+    text-align: left !important;
+    letter-spacing: 0.02em !important;
+    text-transform: uppercase !important;
+    font-size: 0.78rem !important;
+}
+
+table tbody td,
+.dataframe tbody td,
+.table tbody td {
+    border: 1px solid #0e1e40 !important;
+    padding: 0.45rem 1rem !important;
+    color: var(--text-main) !important;
+    background-color: var(--bg-card) !important;
+}
+
+table tbody tr:nth-child(even) td,
+.dataframe tbody tr:nth-child(even) td {
+    background-color: var(--bg-card2) !important;
+}
+
+table tbody tr:hover td,
+.dataframe tbody tr:hover td {
+    background-color: rgba(27,185,235,0.1) !important;
+    color: var(--utb-blanco) !important;
+}
+
+.dataframe tbody th,
+table tbody th {
+    background-color: var(--bg-card2) !important;
+    color: var(--utb-acuamarina) !important;
+    border: 1px solid #0e1e40 !important;
+    padding: 0.45rem 1rem !important;
+}
+
+/* ── 6. TÍTULOS Y TEXTO ── */
+h1, h2, h3 { color: var(--utb-celeste) !important; }
+h4, h5, h6 { color: var(--utb-acuamarina) !important; }
+p, li, span, label { color: var(--text-main) !important; }
+strong, b { color: var(--utb-blanco) !important; }
+a { color: var(--utb-celeste) !important; }
+a:hover { color: var(--utb-esmeralda) !important; text-decoration: underline !important; }
+
+/* ── 7. SCROLLBAR ── */
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--utb-azul), var(--utb-acuamarina));
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--utb-celeste); }
+
+/* ── 8. PORTADA CARD ── */
+.portada-card {
+    background: linear-gradient(135deg,
+        #05091a 0%, #091ECF22 30%,
+        #00A3A115 60%, #64ED2A10 100%) !important;
+    border: 1px solid var(--utb-azul) !important;
+    border-left: 5px solid var(--utb-esmeralda) !important;
+    color: white !important;
+    border-radius: 16px !important;
+    padding: 2.5rem 2rem !important;
+    box-shadow: 0 8px 32px rgba(9,30,207,0.4), 0 0 60px rgba(100,237,42,0.05) !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.portada-card::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important; left: 0 !important; right: 0 !important;
+    height: 2px !important;
+    background: linear-gradient(90deg,
+        var(--utb-esmeralda), var(--utb-celeste),
+        var(--utb-verde-savio), var(--utb-acuamarina)) !important;
+}
+
+.portada-card h1, .portada-card h2, .portada-card h3,
+.portada-card p, .portada-card td, .portada-card th,
+.portada-card strong, .portada-card b { color: white !important; }
+.portada-card table { background: transparent !important; }
+.portada-card td, .portada-card th {
+    border-color: rgba(27,185,235,0.25) !important;
+    background-color: rgba(9,30,207,0.15) !important;
+}
+.portada-card tbody tr:nth-child(even) td {
+    background-color: rgba(0,163,161,0.12) !important;
+}
+.portada-card hr { border-color: rgba(100,237,42,0.4) !important; }
+
+/* ── 9. OUTPUT DE CÓDIGO ── */
+pre, code,
+.cell-output-stdout pre,
+.cell-output pre {
+    background-color: #060d20 !important;
+    color: var(--utb-celeste) !important;
+    border: 1px solid var(--border) !important;
+    border-left: 3px solid var(--utb-verde-savio) !important;
+    border-radius: 6px !important;
+    font-size: 0.83rem !important;
+}
+
+/* ── 10. VALUE BOXES ── */
+.value-box, .bslib-value-box {
+    border-radius: 12px !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 4px 16px rgba(9,30,207,0.25) !important;
+}

@@ -1,0 +1,509 @@
+---
+title: "Trabajo Final Corte 2"
+author: ""
+format:
+  dashboard:
+    theme: cosmo
+    embed-resources: true
+    nav-buttons:
+      - icon: github
+        href: https://terridata.dnp.gov.co/index-app.html#/descargas
+    include-in-header:
+      text: |
+        <style>
+        :root {
+            --utb-esmeralda:   #64ED2A;
+            --utb-verde-savio: #12D191;
+            --utb-verde:       #117C4A;
+            --utb-celeste:     #1BB9EB;
+            --utb-acuamarina:  #00A3A1;
+            --utb-azul:        #091ECF;
+            --utb-blanco:      #FFFFFF;
+            --utb-negro:       #0F0F0F;
+            --bg-deep:         #05091a;
+            --bg-dark:         #080f2a;
+            --bg-card:         #0b1535;
+            --bg-card2:        #0e1c42;
+            --bg-header:       #0a1530;
+            --border:          #0e2060;
+            --text-main:       #d0eeff;
+            --text-muted:      #7eb8d4;
+        }
+        body,
+        .quarto-dashboard,
+        main,
+        .tab-content,
+        .tab-pane,
+        .dashboard-fill,
+        .bslib-page-fill,
+        .html-fill-container,
+        .html-fill-item,
+        .quarto-dashboard .row,
+        .dashboard-row,
+        .bslib-grid,
+        .bslib-gap-spacing {
+            background-color: var(--bg-deep) !important;
+            color: var(--text-main) !important;
+        }
+        .navbar,
+        .navbar.bg-dark,
+        nav.navbar {
+            background: linear-gradient(90deg, var(--bg-deep) 0%, var(--bg-dark) 50%, #091ECF22 100%) !important;
+            border-bottom: 2px solid var(--utb-azul) !important;
+            box-shadow: 0 2px 20px rgba(9,30,207,0.35) !important;
+        }
+        .navbar .navbar-brand,
+        .navbar-brand,
+        .navbar-title {
+            color: var(--utb-celeste) !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.03em !important;
+        }
+        .navbar-nav .nav-link,
+        .navbar-nav > li > a {
+            color: var(--text-main) !important;
+            font-weight: 500 !important;
+            transition: all 0.2s !important;
+        }
+        .navbar-nav .nav-link:hover {
+            color: var(--utb-esmeralda) !important;
+            background-color: rgba(100,237,42,0.08) !important;
+            border-radius: 6px !important;
+        }
+        .navbar-nav .nav-link.active,
+        .navbar-nav > li.active > a {
+            color: var(--utb-esmeralda) !important;
+            background-color: rgba(100,237,42,0.12) !important;
+            border-radius: 6px !important;
+            font-weight: 700 !important;
+        }
+        .navbar .quarto-navbar-tools .bi { color: var(--utb-celeste) !important; }
+        .nav-tabs,
+        .panel-tabset .nav-tabs {
+            border-bottom: 2px solid var(--border) !important;
+            background-color: var(--bg-deep) !important;
+        }
+        .nav-tabs .nav-link,
+        .panel-tabset .nav-tabs .nav-link {
+            color: var(--text-muted) !important;
+            background-color: transparent !important;
+            border: none !important;
+            border-bottom: 3px solid transparent !important;
+            border-radius: 0 !important;
+            font-weight: 500 !important;
+            padding: 0.65rem 1.2rem !important;
+            transition: all 0.2s ease !important;
+        }
+        .nav-tabs .nav-link:hover,
+        .panel-tabset .nav-tabs .nav-link:hover {
+            color: var(--utb-celeste) !important;
+            background-color: rgba(27,185,235,0.08) !important;
+            border-bottom: 3px solid var(--utb-celeste) !important;
+        }
+        .nav-tabs .nav-link.active,
+        .panel-tabset .nav-tabs .nav-link.active {
+            color: var(--utb-esmeralda) !important;
+            background-color: var(--bg-card) !important;
+            border-bottom: 3px solid var(--utb-esmeralda) !important;
+            font-weight: 700 !important;
+        }
+        .card,
+        .bslib-card {
+            background-color: var(--bg-card) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 14px !important;
+            box-shadow: 0 4px 20px rgba(9,30,207,0.2) !important;
+            color: var(--text-main) !important;
+        }
+        .card-header,
+        .bslib-card .card-header {
+            background: linear-gradient(90deg, var(--bg-header) 0%, #0a1f50 100%) !important;
+            border-bottom: 1px solid var(--utb-acuamarina) !important;
+            color: var(--utb-celeste) !important;
+            font-weight: 700 !important;
+            font-size: 0.88rem !important;
+            letter-spacing: 0.02em !important;
+            border-radius: 14px 14px 0 0 !important;
+        }
+        .card-body,
+        .bslib-card .card-body {
+            background-color: var(--bg-card) !important;
+            color: var(--text-main) !important;
+        }
+        table, .dataframe, .table {
+            background-color: var(--bg-card) !important;
+            color: var(--text-main) !important;
+            border-collapse: collapse !important;
+            width: 100% !important;
+            font-size: 0.87rem !important;
+        }
+        table thead th, .dataframe thead th {
+            background: linear-gradient(90deg, #091ECF33 0%, #00A3A122 100%) !important;
+            color: var(--utb-celeste) !important;
+            border: 1px solid var(--border) !important;
+            padding: 0.6rem 1rem !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+            font-size: 0.78rem !important;
+        }
+        table tbody td, .dataframe tbody td {
+            border: 1px solid #0e1e40 !important;
+            padding: 0.45rem 1rem !important;
+            color: var(--text-main) !important;
+            background-color: var(--bg-card) !important;
+        }
+        table tbody tr:nth-child(even) td,
+        .dataframe tbody tr:nth-child(even) td {
+            background-color: var(--bg-card2) !important;
+        }
+        table tbody tr:hover td, .dataframe tbody tr:hover td {
+            background-color: rgba(27,185,235,0.1) !important;
+            color: var(--utb-blanco) !important;
+        }
+        .dataframe tbody th, table tbody th {
+            background-color: var(--bg-card2) !important;
+            color: var(--utb-acuamarina) !important;
+            border: 1px solid #0e1e40 !important;
+            padding: 0.45rem 1rem !important;
+        }
+        h1, h2, h3 { color: var(--utb-celeste) !important; }
+        h4, h5, h6 { color: var(--utb-acuamarina) !important; }
+        p, li, span, label { color: var(--text-main) !important; }
+        strong, b { color: var(--utb-blanco) !important; }
+        a { color: var(--utb-celeste) !important; }
+        a:hover { color: var(--utb-esmeralda) !important; }
+        ::-webkit-scrollbar { width: 7px; height: 7px; }
+        ::-webkit-scrollbar-track { background: var(--bg-deep); }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--utb-azul), var(--utb-acuamarina));
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--utb-celeste); }
+        .portada-card {
+            background: linear-gradient(135deg, #05091a 0%, #091ECF22 30%, #00A3A115 60%, #64ED2A10 100%) !important;
+            border: 1px solid var(--utb-azul) !important;
+            border-left: 5px solid var(--utb-esmeralda) !important;
+            color: white !important;
+            border-radius: 16px !important;
+            padding: 2.5rem 2rem !important;
+            box-shadow: 0 8px 32px rgba(9,30,207,0.4) !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        .portada-card::before {
+            content: "" !important;
+            position: absolute !important;
+            top: 0 !important; left: 0 !important; right: 0 !important;
+            height: 3px !important;
+            background: linear-gradient(90deg, var(--utb-esmeralda), var(--utb-celeste), var(--utb-verde-savio), var(--utb-acuamarina)) !important;
+        }
+        .portada-card h1, .portada-card h2, .portada-card h3,
+        .portada-card p, .portada-card td, .portada-card th,
+        .portada-card strong, .portada-card b { color: white !important; }
+        .portada-card table { background: transparent !important; }
+        .portada-card td, .portada-card th {
+            border-color: rgba(27,185,235,0.25) !important;
+            background-color: rgba(9,30,207,0.15) !important;
+        }
+        .portada-card tbody tr:nth-child(even) td { background-color: rgba(0,163,161,0.12) !important; }
+        .portada-card hr { border-color: rgba(100,237,42,0.4) !important; }
+        pre, code, .cell-output-stdout pre, .cell-output pre {
+            background-color: #060d20 !important;
+            color: var(--utb-celeste) !important;
+            border: 1px solid var(--border) !important;
+            border-left: 3px solid var(--utb-verde-savio) !important;
+            border-radius: 6px !important;
+            font-size: 0.83rem !important;
+        }
+        .value-box, .bslib-value-box {
+            border-radius: 12px !important;
+            border: 1px solid var(--border) !important;
+        }
+        </style>
+---
+
+```{python}
+#| label: setup
+#| include: false
+
+import pandas as pd
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+from analizador import analizar
+
+# ── Estilo global de matplotlib ──────────────────────────
+matplotlib.rcParams['figure.dpi'] = 120
+matplotlib.rcParams['axes.spines.top']   = False
+matplotlib.rcParams['axes.spines.right'] = False
+matplotlib.rcParams['figure.facecolor']  = '#05091a'
+matplotlib.rcParams['axes.facecolor']    = '#0b1535'
+matplotlib.rcParams['axes.edgecolor']    = '#0e2060'
+matplotlib.rcParams['axes.labelcolor']   = '#d0eeff'
+matplotlib.rcParams['xtick.color']       = '#d0eeff'
+matplotlib.rcParams['ytick.color']       = '#d0eeff'
+matplotlib.rcParams['text.color']        = '#d0eeff'
+matplotlib.rcParams['grid.color']        = '#0e2060'
+matplotlib.rcParams['grid.alpha']        = 0.4
+
+COLOR_PRINCIPAL  = "#1BB9EB"   # Celeste UTB
+COLOR_SECUNDARIO = "#64ED2A"   # Esmeralda UTB
+COLOR_ACENTO     = "#12D191"   # Verde SAVIO
+COLOR_TITULO     = "#ffffff"
+COLOR_VERDE      = "#117C4A"   # Verde UTB
+
+PALETTE = ["#1BB9EB","#64ED2A","#12D191","#00A3A1","#091ECF","#117C4A","#1BB9EB","#64ED2A"]
+
+df = pd.read_excel("conflicto_y_paz.xlsx")
+
+for col in df.columns:
+    valores_unicos = df[col].dropna().unique()
+    if len(valores_unicos) == 1 and str(valores_unicos[0]).strip().lower().startswith("aaa"):
+        df.drop(columns=[col], inplace=True)
+resultado = analizar(df)
+```
+
+# Portada
+
+## Row
+
+### Column {width=35%}
+
+```{python}
+#| echo: false
+from IPython.display import Image, display
+display(Image(filename="logotub.png", width=200))
+```
+
+### Column {width=65%}
+
+::: {.portada-card}
+
+**UNIVERSIDAD TECNOLÓGICA DE BOLÍVAR**
+
+**Programación para Ciencia de Datos – NRC 2479**
+
+---
+
+**CONFLICTO ARMADO EN COLOMBIA Y SUS EFECTOS TERRITORIALES**
+
+| Integrante | Código |
+|---|---|
+| Valentina Julio | T00081186 |
+| Javier Mercado | T00071286 |
+| Kevin Mendoza | T00100515 |
+| Jorge Morales | T00071291 |
+| Juan Diego Serpa | T00076352 |
+
+---
+
+**Revisado por:** Prof. Jorge Luis Villalba  
+**Ciudad:** Cartagena, Colombia  
+**Fecha:** 14 de Abril de 2026
+
+:::
+
+#  Presentación
+
+## Row
+
+### Column {width=60%}
+
+::: {.card}
+**Proyecto de Ingeniería 2 – Entrega 2**
+
+| Campo | Detalle |
+|---|---|
+| **Curso** | Programación para Ciencia de Datos |
+| **Tema** | Conflicto Armado en Colombia |
+| **Dataset** | Terridata – DNP |
+| **Fecha** | 8 de marzo de 2026 · Cartagena de Indias |
+
+El presente dashboard presenta un análisis estadístico descriptivo completo del dataset *Conflicto y Paz* obtenido de la plataforma **Terridata** del Departamento Nacional de Planeación.  
+Fuente de descarga: [terridata.dnp.gov.co](https://terridata.dnp.gov.co/index-app.html#/descargas)
+:::
+
+### Column {width=40%}
+
+```{python}
+#| echo: false
+#| title: "Dimensiones del dataset"
+
+resumen = pd.DataFrame({
+    "Métrica": ["Total de registros", "Total de variables",
+                "Variables numéricas", "Variables categóricas"],
+    "Valor": [
+        f"{len(df):,}",
+        len(df.columns),
+        len(df.select_dtypes("number").columns),
+        len(df.select_dtypes("object").columns)
+    ]
+})
+resumen
+```
+
+#  Dataset y Variables
+
+## Row
+
+### Column {width=50%}
+
+```{python}
+#| echo: false
+#| title: "Tipos de variables estadísticas"
+
+tipos_base = [
+    "Discreto","Nominal","Discreto","Nominal","Nominal",
+    "Nominal","Nominal","Continuo","Ordinal","Discreto",
+    "Ordinal","Nominal","Nominal"
+]
+variables = pd.DataFrame({
+    "Variable": df.columns,
+    "Tipo estadístico": tipos_base[:len(df.columns)]
+})
+variables
+```
+
+### Column {width=50%}
+
+```{python}
+#| echo: false
+#| title: "Observaciones y datos faltantes por variable"
+
+observaciones = pd.DataFrame({
+    "Observaciones": df.count(),
+    "Datos faltantes": df.isnull().sum(),
+    "% Faltante": ((df.isnull().sum() / len(df)) * 100).round(2)
+})
+observaciones
+```
+
+## Row
+
+```{python}
+#| echo: false
+#| title: "Rango (Mín / Máx) de variables numéricas"
+
+minmax = pd.DataFrame({
+    "Mínimo": df.select_dtypes("number").min(),
+    "Máximo": df.select_dtypes("number").max()
+})
+minmax
+```
+
+#  Oportunidades de Mejora
+
+## Row
+
+::: {.card}
+
+A partir de la revisión inicial del dataset se identificaron **6 oportunidades de mejora**:
+
+1. **Valores faltantes (NaN)** – Columnas como *Código Departamento*, *Departamento* y *Entidad* contienen nulos. Se requiere limpieza y validación de datos.
+
+2. **Inconsistencia en tipos de datos** – Algunos identificadores numéricos aparecen como decimales (p. ej. `5.0`). Deberían manejarse como enteros o cadenas de texto.
+
+3. **Alta repetición de variables categóricas** – Columnas como *Dimensión*, *Subcategoría* e *Indicador* contienen valores muy repetidos, lo que podría optimizarse con normalización.
+
+4. **Gran volumen de registros** – Con más de 80 000 registros, algunos análisis pueden ser lentos. Se recomiendan agregaciones por año o departamento.
+
+5. **Falta de documentación de indicadores** – No se incluyen definiciones completas de cada indicador. Se recomienda un diccionario de datos.
+
+6. **Redundancia territorial** – Departamentos y municipios se repiten en muchos registros. Una estructura relacional separaría mejor los datos.
+
+:::
+
+#  Función de Análisis
+
+## Row {.tabset}
+
+### Calidad de Datos
+
+```{python}
+#| echo: false
+#| title: "Porcentaje de datos faltantes"
+resultado["calidad"]["datos_faltantes"]
+```
+
+```{python}
+#| echo: false
+#| title: "Registros duplicados"
+resultado["calidad"]["valores_repetidos"]
+```
+
+### Variables Cuantitativas
+
+```{python}
+#| echo: false
+#| title: "MDTC – Media, Mediana, Moda y Rango"
+resultado["descriptiva"]["mdtc"]
+```
+
+```{python}
+#| echo: false
+#| title: "MDD – Varianza, Desv. Estándar, CV y Rango"
+resultado["descriptiva"]["mdd"]
+```
+
+```{python}
+#| echo: false
+#| title: "MDL – Cuartiles Q1, Q2, Q3 e IQR"
+resultado["descriptiva"]["mdl"]
+```
+
+```{python}
+#| echo: false
+#| title: "MDF – Asimetría y Curtosis"
+resultado["descriptiva"]["mdf"]
+```
+
+### Gráficos Cuantitativos
+
+```{python}
+#| echo: false
+#| title: "Histogramas"
+resultado["graficos"]["histogramas"]
+```
+
+```{python}
+#| echo: false
+#| title: "Curvas KDE"
+resultado["graficos"]["kde"]
+```
+
+```{python}
+#| echo: false
+#| title: "Boxplots"
+resultado["graficos"]["boxplots"]
+```
+
+### Gráficos Cualitativos
+
+```{python}
+#| echo: false
+for col, fig in resultado["graficos"]["barras"].items():
+    display(fig)
+    plt.close(fig)
+```
+
+#  Referencias
+
+## Row
+
+::: {.card}
+
+**Referencias del proyecto**
+
+| Recurso | Enlace |
+|---|---|
+| Dataset – Terridata DNP | https://terridata.dnp.gov.co/index-app.html#/descargas |
+| Pandas Documentation | https://pandas.pydata.org/docs/ |
+| Matplotlib Documentation | https://matplotlib.org/stable/contents.html |
+
+**Referencias ecuaciones matemáticas**
+
+- Walpole, R. E., Myers, R. H., & Myers, S. L. (2012). *Probability and Statistics for Engineers and Scientists* (9th ed.). Pearson.
+- Montgomery, D. C., & Runger, G. C. (2014). *Applied Statistics and Probability for Engineers* (6th ed.). Wiley.
+- Mendenhall, W., Beaver, R. J., & Beaver, B. M. (2013). *Introduction to Probability and Statistics* (14th ed.). Cengage Learning.
+
+:::
