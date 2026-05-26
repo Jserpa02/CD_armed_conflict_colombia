@@ -29,7 +29,9 @@ format:
         \vspace{2.5cm}
 
         {\normalsize
+        Valentina Julio \quad T00081186 \\[0.4cm]
         Javier Mercado \quad T00071286 \\[0.4cm]
+        Kevin Mendoza \quad T00100515 \\[0.4cm]
         Jorge Morales \quad T00071291 \\[0.4cm]
         Juan Diego Serpa \quad T00076352
         }
