@@ -1,280 +1,156 @@
-# analizador
 
-Librería modular de análisis estadístico exploratorio para datasets CSV y Excel, construida sobre `pandas`, `numpy` y `matplotlib`. Diseñada con arquitectura de librería real: separación de responsabilidades, funciones puras reutilizables y salidas estructuradas.
+# Conflicto Armado en Colombia y sus Efectos Territoriales
 
----
+Análisis estadístico exploratorio del dataset **Conflicto y Paz** de la plataforma Terridata del Departamento Nacional de Planeación (DNP). Desarrollado como proyecto final del curso Programación para Ciencia de Datos — Universidad Tecnológica de Bolívar, NRC 2479.
 
-## Estructura del proyecto
-
-```
-tu_proyecto/
-├── analizador/
-│   ├── __init__.py        # API pública
-│   ├── core.py            # Orquestador principal
-│   ├── calidad.py         # Calidad de datos
-│   ├── descriptiva.py     # Estadística descriptiva
-│   ├── frecuencias.py     # Tablas de frecuencia
-│   └── graficos.py        # Visualizaciones matplotlib
-│
-└── tu_notebook.ipynb      # o tu_script.py / Estudio.qmd
-```
-
-> La carpeta `analizador/` debe estar en el mismo directorio desde donde ejecutas tu script o notebook.
+El dashboard interactivo está construido en **Quarto** e integra la librería [`analizador`](https://github.com/Jserpa02/CD_pythonLibrary.git) desarrollada por el equipo como parte del proyecto.
 
 ---
 
-## Dependencias
+## Dataset
 
-```
-python >= 3.9
-pandas
-numpy
-matplotlib
-openpyxl      # para leer archivos .xlsx
+| Campo | Detalle |
+|---|---|
+| **Fuente** | Terridata – Departamento Nacional de Planeación |
+| **Descarga** | https://terridata.dnp.gov.co/index-app.html#/descargas |
+| **Registros** | 86,134 |
+| **Variables** | 13 |
+| **Cobertura temporal** | 2002 – 2023 |
+
+### Variables del dataset
+
+| Variable | Tipo | Descripción |
+|---|---|---|
+| Código Departamento | Discreto | Código numérico del departamento (1–99) |
+| Departamento | Nominal | Nombre del departamento |
+| Código Entidad | Discreto | Código numérico de la entidad reportante |
+| Entidad | Nominal | Nombre de la entidad |
+| Dimensión | Nominal | Dimensión temática del indicador |
+| Subcategoría | Nominal | Subcategoría dentro de la dimensión |
+| Indicador | Nominal | Nombre del indicador medido |
+| Dato Numérico | Continuo | Valor cuantitativo del indicador |
+| Dato Cualitativo | Ordinal | Clasificación cualitativa del indicador |
+| Año | Discreto | Año de registro (2002–2023) |
+| Mes | Ordinal | Mes de registro |
+| Fuente | Nominal | Entidad fuente del dato |
+| Unidad de Medida | Nominal | Unidad en que se expresa el indicador |
+
+---
+
+## Hallazgos relevantes
+
+### Cobertura territorial
+El dataset cubre los **32 departamentos de Colombia** con códigos entre 1 y 99. La media del código departamental es 37.7, lo que indica una distribución moderadamente uniforme entre departamentos, con mayor concentración en los rangos bajos (Q1 = 15, mediana = 25).
+
+### Cobertura temporal
+Los registros abarcan **21 años** de datos (2002–2023). La media temporal es 2016, con el 50% de los registros concentrados entre 2011 y 2022, lo que refleja un mayor volumen de reportes en la última década — consistente con el fortalecimiento institucional del sistema de monitoreo post-acuerdo de paz.
+
+### Estacionalidad
+El mes predominante es **diciembre (mes 12)**, con Q1, mediana y Q3 todos en 12. Esto sugiere que la mayoría de los indicadores se reportan con corte anual a fin de año, más que con seguimiento mensual continuo.
+
+### Entidades reportantes
+Con más de 38,000 entidades distintas en promedio (media Código Entidad = 38,112), el dataset consolida información de un amplio ecosistema institucional a nivel nacional y territorial.
+
+### Calidad de los datos
+Se identificaron **6 oportunidades de mejora**:
+- Valores faltantes en columnas territoriales (Código Departamento, Departamento, Entidad)
+- Identificadores numéricos registrados como decimales (ej. `5.0`)
+- Alta repetición en variables categóricas (Dimensión, Subcategoría, Indicador)
+- Gran volumen que puede requerir agregaciones para análisis específicos
+- Ausencia de diccionario de datos con definiciones formales de indicadores
+- Redundancia territorial que se beneficiaría de una estructura relacional
+
+---
+
+## Cómo reproducir el análisis
+
+### 1. Requisitos
+
+- Python >= 3.9
+- Quarto >= 1.4
+- Git
+
+### 2. Clonar el repositorio
+
+```bash
+git clone https://github.com/Jserpa02/CD_armed_conflict_colombia
+cd CD_armed_conflict_colombia
 ```
 
-Instalación:
+### 3. Instalar la librería analizador
+
+```bash
+pip install git+https://github.com/Jserpa02/CD_pythonLibrary
+```
+
+### 4. Instalar dependencias adicionales
 
 ```bash
 pip install pandas numpy matplotlib openpyxl
 ```
 
----
+### 5. Renderizar el dashboard
 
-## Uso rápido
-
-```python
-from analizador import analizar
-
-resultado = analizar("mi_dataset.csv")
+```bash
+quarto render Estudio.qmd
 ```
 
-O con un DataFrame ya cargado:
+O para previsualización en vivo:
 
-```python
-import pandas as pd
-from analizador import analizar
-
-df = pd.read_excel("mi_dataset.xlsx")
-resultado = analizar(df)
+```bash
+quarto preview Estudio.qmd
 ```
+
+El dashboard se genera como `Estudio.html` — un archivo autocontenido que puede abrirse en cualquier navegador sin servidor.
 
 ---
 
-## Estructura del resultado
+## Estructura del repositorio
 
-`analizar()` devuelve un diccionario con cuatro claves principales:
-
-```python
-{
-    "calidad":     { ... },   # DataFrames de calidad de datos
-    "descriptiva": { ... },   # DataFrames de estadística descriptiva
-    "frecuencias": { ... },   # DataFrames por variable categórica
-    "graficos":    { ... }    # Figuras matplotlib
-}
 ```
-
-### `resultado["calidad"]`
-
-| Clave                 | Contenido                                                                     |
-| --------------------- | ----------------------------------------------------------------------------- |
-| `"datos_faltantes"`   | `DataFrame` con total de registros, datos faltantes y % faltante por variable |
-| `"valores_repetidos"` | `DataFrame` con variable, valor repetido y frecuencia                         |
-
-```python
-resultado["calidad"]["datos_faltantes"]
-resultado["calidad"]["valores_repetidos"]
-```
-
-### `resultado["descriptiva"]`
-
-| Clave    | Contenido                                                                            |
-| -------- | ------------------------------------------------------------------------------------ |
-| `"mdtc"` | Media, Mediana, Moda(s) y Rango                                                      |
-| `"mdd"`  | Varianza, Desv. Estándar, CV (%) y Rango                                             |
-| `"mdl"`  | Cuartiles Q1, Q2, Q3 e IQR — calculados por interpolación lineal                     |
-| `"mdf"`  | Asimetría, Curtosis y su interpretación (Positiva/Negativa, Lepto/Plati/Mesocúrtica) |
-
-```python
-resultado["descriptiva"]["mdtc"]
-resultado["descriptiva"]["mdd"]
-resultado["descriptiva"]["mdl"]
-resultado["descriptiva"]["mdf"]
-```
-
-### `resultado["frecuencias"]`
-
-Diccionario con una entrada por cada variable categórica del dataset. Cada entrada es un `DataFrame` con frecuencia absoluta, relativa y acumulada.
-
-```python
-# Listar variables categóricas analizadas
-resultado["frecuencias"].keys()
-
-# Ver tabla de frecuencias de una variable específica
-resultado["frecuencias"]["Departamento"]
-```
-
-### `resultado["graficos"]`
-
-| Clave           | Contenido                                                 |
-| --------------- | --------------------------------------------------------- |
-| `"histogramas"` | `Figure` con histogramas de todas las variables numéricas |
-| `"kde"`         | `Figure` con curvas de densidad KDE                       |
-| `"boxplots"`    | `Figure` con boxplots                                     |
-| `"barras"`      | `dict[str, Figure]` — una figura por variable categórica  |
-
-```python
-# Mostrar en notebook
-resultado["graficos"]["histogramas"]
-resultado["graficos"]["kde"]
-resultado["graficos"]["boxplots"]
-
-# Mostrar gráficos cualitativos
-for col, fig in resultado["graficos"]["barras"].items():
-    display(fig)
-
-# Guardar una figura
-resultado["graficos"]["histogramas"].savefig("histogramas.png", dpi=150)
+CD_armed_conflict_colombia/
+│
+├── conflicto_y_paz.xlsx     ← dataset
+├── Estudio.qmd              ← dashboard principal (Quarto)
+├── Estudio.html             ← dashboard renderizado
+├── logotub.png              ← logo institucional
+├── styles.css               ← estilos del dashboard
+├── portadaa.tex             ← portada LaTeX
+├── LICENSE
+└── README.md
 ```
 
 ---
 
-## Parámetros de `analizar()`
+## Tecnologías
 
-```python
-analizar(
-    fuente,                    # str, Path o DataFrame
-    top_n_categorias = 10,     # top N categorías en frecuencias y gráficos cualitativos
-    bins_histograma  = 30,     # bins para histogramas
-    ncols_graficos   = 2,      # columnas en las cuadrículas de gráficos
-    incluir_graficos = True    # False para pipelines headless (sin matplotlib)
-)
-```
-
----
-
-## Uso de funciones individuales
-
-Todas las funciones pueden usarse de forma independiente sin pasar por `analizar()`.
-
-### Calidad de datos
-
-```python
-from analizador import porcentaje_datos_faltantes, valores_repetidos
-
-porcentaje_datos_faltantes(df)
-valores_repetidos(df)
-```
-
-### Estadística descriptiva
-
-```python
-from analizador import calcular_mdtc, calcular_mdd, calcular_mdl, calcular_mdf
-
-calcular_mdtc(df)   # Media, Mediana, Moda, Rango
-calcular_mdd(df)    # Varianza, Desv. Std, CV, Rango
-calcular_mdl(df)    # Q1, Q2, Q3, IQR
-calcular_mdf(df)    # Asimetría, Curtosis
-```
-
-### Frecuencias categóricas
-
-```python
-from analizador import tabla_frecuencias_categoricas
-
-tabla_frecuencias_categoricas(df, "Departamento", top_n=10)
-```
-
-### Gráficos
-
-```python
-from analizador import histogramas, curvas_kde, boxplots
-from analizador import barras_frecuencia, barras_todas_categoricas
-
-# Cuantitativos
-fig = histogramas(df, bins=20, ncols=3)
-fig = curvas_kde(df)
-fig = boxplots(df)
-
-# Cualitativos
-fig = barras_frecuencia(df, "Departamento", top_n=15, color="#1BB9EB")
-figs = barras_todas_categoricas(df, top_n=10)
-```
-
-#### Paleta personalizada
-
-Todas las funciones de gráficos aceptan el parámetro `palette`:
-
-```python
-mi_paleta = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4"]
-fig = histogramas(df, palette=mi_paleta)
-```
+| Herramienta | Uso |
+|---|---|
+| Python 3.x | Lenguaje principal |
+| Quarto | Dashboard interactivo |
+| pandas | Manipulación de datos |
+| numpy | Cálculo estadístico |
+| matplotlib | Visualizaciones |
+| analizador | Librería propia de análisis EDA |
 
 ---
 
-## Módulos internos
+## Autores
 
-| Módulo           | Responsabilidad                                                                     |
-| ---------------- | ----------------------------------------------------------------------------------- |
-| `core.py`        | Orquesta todos los módulos. Carga datos y devuelve el diccionario de resultados.    |
-| `calidad.py`     | Detecta datos faltantes y valores repetidos.                                        |
-| `descriptiva.py` | Calcula todas las medidas de tendencia central, dispersión, posición y forma.       |
-| `frecuencias.py` | Genera tablas de frecuencia para variables categóricas.                             |
-| `graficos.py`    | Produce figuras matplotlib reutilizables. No hace `plt.show()` — devuelve `Figure`. |
+| Integrante | Código |
+|---|---|
+| Juan Diego Serpa Medina | T00076352 |
+| Javier Enrique Mercado Bolivar | T00071286 |
+| Jorge Morales Blanco | T00071291 |
 
-### Helpers privados en `graficos.py`
 
-Las siguientes funciones son internas y no forman parte de la API pública:
-
-| Función                  | Descripción                                                  |
-| ------------------------ | ------------------------------------------------------------ |
-| `_aplicar_estilo_base()` | Aplica el tema oscuro a un eje matplotlib                    |
-| `_crear_grilla()`        | Crea subplots en cuadrícula y oculta ejes sobrantes          |
-| `_calcular_kde()`        | Kernel gaussiano con ancho de banda de Silverman (sin scipy) |
-| `_color_para_indice()`   | Cicla sobre una paleta dado un índice                        |
+**Universidad Tecnológica de Bolívar**  
+Programación para Ciencia de Datos — NRC 2479  
+Revisado por: Prof. Jorge Luis Villalba  
+Cartagena de Indias, 2026
 
 ---
 
-## Notas técnicas
+## Licencia
 
-- **Sin dependencias estadísticas externas**: `calcular_mdl` implementa interpolación lineal manualmente; `_calcular_kde` implementa el kernel gaussiano con la regla de Silverman — ninguno depende de `scipy`.
-- **Varianza muestral**: `calcular_mdd` usa `n - 1` en el denominador (estimador insesgado de Bessel).
-- **Gráficos headless**: pasar `incluir_graficos=False` a `analizar()` evita cualquier inicialización de matplotlib, útil en servidores o pipelines sin display.
-- **Caché de Python**: si reemplazas archivos `.py` y los cambios no se reflejan, elimina la carpeta `analizador/__pycache__/` y vuelve a ejecutar.
-
----
-
-## Ejemplo completo en notebook
-
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-from IPython.display import display
-from analizador import analizar
-
-# Cargar y analizar
-df = pd.read_excel("conflicto_y_paz.xlsx")
-resultado = analizar(df, top_n_categorias=10, bins_histograma=30)
-
-# Calidad
-display(resultado["calidad"]["datos_faltantes"])
-display(resultado["calidad"]["valores_repetidos"])
-
-# Descriptiva
-display(resultado["descriptiva"]["mdtc"])
-display(resultado["descriptiva"]["mdl"])
-display(resultado["descriptiva"]["mdf"])
-
-# Gráficos cuantitativos
-display(resultado["graficos"]["histogramas"])
-display(resultado["graficos"]["kde"])
-display(resultado["graficos"]["boxplots"])
-
-# Gráficos cualitativos
-for col, fig in resultado["graficos"]["barras"].items():
-    display(fig)
-    plt.close(fig)
-
-# Guardar una figura
-resultado["graficos"]["histogramas"].savefig("output/histogramas.png", dpi=150, bbox_inches="tight")
-```
+MIT License — ver archivo [LICENSE](LICENSE)
