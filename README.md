@@ -140,6 +140,9 @@ CD_armed_conflict_colombia/
 | Integrante | Código |
 |---|---|
 | Juan Diego Serpa Medina | T00076352 |
+| Javier Enrique Mercado Bolivar | T00071286 |
+| Jorge Morales Blanco | T00071291 |
+
 
 **Universidad Tecnológica de Bolívar**  
 Programación para Ciencia de Datos — NRC 2479  
