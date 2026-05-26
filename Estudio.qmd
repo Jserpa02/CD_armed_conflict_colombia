@@ -507,3 +507,4 @@ for col, fig in resultado["graficos"]["barras"].items():
 - Mendenhall, W., Beaver, R. J., & Beaver, B. M. (2013). *Introduction to Probability and Statistics* (14th ed.). Cengage Learning.
 
 :::
+

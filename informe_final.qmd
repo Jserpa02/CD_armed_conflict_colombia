@@ -1,0 +1,566 @@
+---
+title: ""
+subtitle: ""
+author: ""
+date: ""
+format:
+  pdf:
+    documentclass: article
+    classoption: [12pt, a4paper]
+    geometry: margin=2.5cm
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    colorlinks: true
+    fig-pos: "H"
+    toc-title: "Tabla de Contenidos"
+    include-before-body:
+      text: |
+        \begin{titlepage}
+        \centering
+        \vspace*{2cm}
+        \includegraphics[width=4cm]{logotub.png}
+        \vspace{2cm}
+
+        {\LARGE \textbf{Conflicto Armado en Colombia\\[0.3cm]y sus Efectos Territoriales}}
+        \vspace{0.8cm}
+
+        {\large Análisis Estadístico Descriptivo --- Informe Final}
+        \vspace{2.5cm}
+
+        {\normalsize
+        Javier Mercado \quad T00071286 \\[0.4cm]
+        Jorge Morales \quad T00071291 \\[0.4cm]
+        Juan Diego Serpa \quad T00076352
+        }
+        \vspace{2cm}
+
+        {\normalsize Revisado por} \\[0.3cm]
+        {\normalsize Prof. Jorge Luis Villalba}
+        \vfill
+
+        {\normalsize \textbf{Programación para Ciencia de Datos --- NRC 2479}} \\[0.3cm]
+        {\normalsize \textbf{UNIVERSIDAD TECNOLÓGICA DE BOLÍVAR}} \\[0.3cm]
+        {\normalsize Escuela de Transformación Digital} \\[0.5cm]
+        {\normalsize Cartagena de Indias, mayo de 2026}
+        \end{titlepage}
+    include-in-header:
+      text: |
+        \usepackage{booktabs}
+        \usepackage{float}
+        \usepackage{amsmath}
+        \usepackage{amssymb}
+        \usepackage{fancyhdr}
+        \usepackage{graphicx}
+        \usepackage{hyperref}
+        \pagestyle{fancy}
+        \fancyhf{}
+        \rhead{Conflicto Armado en Colombia}
+        \lhead{UTB --- Programación para Ciencia de Datos}
+        \cfoot{\thepage}
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+
+```{python}
+#| label: setup
+#| include: false
+
+import pandas as pd
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
+from IPython.display import display
+
+# ── Paleta clara para PDF ─────────────────────────────────
+PALETTE = [
+    "#1f77b4",  # azul acero       → Código Departamento
+    "#2ca02c",  # verde             → Código Entidad
+    "#d62728",  # rojo              → Año
+    "#ff7f0e",  # naranja           → Mes
+    "#9467bd",  # violeta
+    "#8c564b",  # marrón
+    "#e377c2",  # rosa
+    "#17becf",  # cian
+]
+
+matplotlib.rcParams.update({
+    "figure.dpi":          150,
+    "figure.facecolor":    "white",
+    "axes.facecolor":      "white",
+    "axes.edgecolor":      "#333333",
+    "axes.labelcolor":     "#222222",
+    "axes.grid":           True,
+    "grid.color":          "#dddddd",
+    "grid.alpha":          0.6,
+    "xtick.color":         "#333333",
+    "ytick.color":         "#333333",
+    "text.color":          "#222222",
+    "axes.spines.top":     False,
+    "axes.spines.right":   False,
+    "font.size":           9,
+})
+
+df = pd.read_excel("conflicto_y_paz.xlsx")
+
+for col in df.columns:
+    valores_unicos = df[col].dropna().unique()
+    if len(valores_unicos) == 1 and str(valores_unicos[0]).strip().lower().startswith("aaa"):
+        df.drop(columns=[col], inplace=True)
+
+from analizador import analizar
+resultado = analizar(df)
+```
+
+\newpage
+
+# Presentación del Proyecto
+
+## Contexto
+
+El presente informe corresponde al Trabajo Final del curso **Programación para Ciencia de Datos (NRC 2479)** de la Universidad Tecnológica de Bolívar. El análisis se realizó sobre el dataset *Conflicto y Paz* de la plataforma **Terridata** del Departamento Nacional de Planeación (DNP), disponible en \url{https://terridata.dnp.gov.co}.
+
+El dataset consolida indicadores territoriales sobre el conflicto armado en Colombia, reportados por múltiples entidades del Estado a lo largo de 21 años (2002–2023).
+
+## Objetivo
+
+Aplicar técnicas de análisis estadístico descriptivo para caracterizar el dataset, identificar patrones territoriales y temporales, y evaluar la calidad de los datos, usando la librería `analizador` desarrollada por el equipo como parte del proyecto.
+
+\newpage
+
+# Dataset y Variables
+
+## Descripción general
+
+```{python}
+resumen = pd.DataFrame({
+    "Métrica": [
+        "Total de registros",
+        "Total de variables",
+        "Variables numéricas",
+        "Variables categóricas",
+        "Cobertura temporal"
+    ],
+    "Valor": [
+        f"{len(df):,}",
+        len(df.columns),
+        len(df.select_dtypes('number').columns),
+        len(df.select_dtypes('object').columns),
+        f"{int(df['Año'].min())} – {int(df['Año'].max())}"
+    ]
+})
+print(resumen.to_string(index=False))
+```
+
+## Variables del dataset
+
+```{python}
+tipos = [
+    "Discreto","Nominal","Discreto","Nominal","Nominal",
+    "Nominal","Nominal","Continuo","Ordinal","Discreto",
+    "Ordinal","Nominal","Nominal"
+]
+variables = pd.DataFrame({
+    "Variable": df.columns,
+    "Tipo": tipos[:len(df.columns)],
+    "Descripción": [
+        "Código DANE del departamento",
+        "Nombre del departamento",
+        "Código de la entidad reportante",
+        "Nombre de la entidad reportante",
+        "Dimensión temática del indicador",
+        "Subcategoría dentro de la dimensión",
+        "Nombre del indicador medido",
+        "Valor cuantitativo del indicador",
+        "Clasificación cualitativa del indicador",
+        "Año de registro",
+        "Mes de registro",
+        "Entidad fuente del dato",
+        "Unidad en que se expresa el indicador",
+    ][:len(df.columns)]
+})
+print(variables.to_string(index=False))
+```
+
+\newpage
+
+# Calidad de Datos
+
+## Datos faltantes
+
+```{python}
+df_faltantes = resultado["calidad"]["datos_faltantes"]
+print(df_faltantes.to_string(index=False))
+```
+
+Se identificaron valores faltantes principalmente en variables territoriales. Las variables numéricas (`Año`, `Mes`, `Código Departamento`, `Código Entidad`) presentan cobertura completa, lo que garantiza la integridad del análisis cuantitativo.
+
+## Valores repetidos por variable
+
+Las variables categóricas presentan alta repetición estructural, esperada dado el modelo de datos longitudinal del dataset: cada indicador se repite por departamento y por año. La variable **Dimensión** tiene un único valor (`Paz y víctimas`) en los 86,134 registros, lo que confirma que el dataset es temáticamente homogéneo.
+
+\newpage
+
+# Estadística Descriptiva
+
+## Medidas de tendencia central
+
+Las siguientes medidas se calcularon manualmente usando la librería `analizador`, sin depender de funciones estadísticas de pandas o numpy.
+
+### Media
+
+$$\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i$$
+
+### Mediana
+
+$$Me = \begin{cases} x_{\frac{n+1}{2}} & \text{si } n \text{ es impar} \\ \dfrac{x_{\frac{n}{2}} + x_{\frac{n}{2}+1}}{2} & \text{si } n \text{ es par} \end{cases}$$
+
+### Moda
+
+Valor con mayor frecuencia absoluta en la distribución.
+
+### Rango
+
+$$R = x_{max} - x_{min}$$
+
+```{python}
+print(resultado["descriptiva"]["mdtc"].to_string(index=False))
+```
+
+## Medidas de dispersión
+
+### Varianza muestral
+
+$$s^2 = \frac{\sum_{i=1}^{n}(x_i - \bar{x})^2}{n - 1}$$
+
+### Desviación estándar
+
+$$s = \sqrt{s^2} = \sqrt{\frac{\sum_{i=1}^{n}(x_i - \bar{x})^2}{n-1}}$$
+
+### Coeficiente de variación
+
+$$CV = \frac{s}{\bar{x}} \times 100$$
+
+```{python}
+print(resultado["descriptiva"]["mdd"].to_string(index=False))
+```
+
+## Medidas de posición — Cuartiles
+
+Los cuartiles se calcularon por **interpolación lineal**. Para el cuartil de orden $p$:
+
+$$L = \frac{p}{100}(n - 1)$$
+
+Sea $i = \lfloor L \rfloor$ y $f = L - i$, entonces:
+
+$$Q_p = x_i + f \cdot (x_{i+1} - x_i)$$
+
+El **rango intercuartílico** mide la dispersión del 50% central:
+
+$$IQR = Q_3 - Q_1$$
+
+```{python}
+print(resultado["descriptiva"]["mdl"].to_string(index=False))
+```
+
+## Medidas de forma
+
+### Asimetría (Sesgo de Fisher)
+
+$$\gamma_1 = \frac{1}{n} \cdot \frac{\sum_{i=1}^{n}(x_i - \bar{x})^3}{s^3}$$
+
+| Valor | Interpretación |
+|---|---|
+| $\gamma_1 > 0$ | Asimetría positiva (cola derecha) |
+| $\gamma_1 < 0$ | Asimetría negativa (cola izquierda) |
+| $\gamma_1 = 0$ | Distribución simétrica |
+
+### Curtosis (excess kurtosis)
+
+$$\gamma_2 = \frac{1}{n} \cdot \frac{\sum_{i=1}^{n}(x_i - \bar{x})^4}{s^4} - 3$$
+
+| Valor | Tipo | Descripción |
+|---|---|---|
+| $\gamma_2 > 0$ | Leptocúrtica | Cola más pesada que la normal |
+| $\gamma_2 < 0$ | Platicúrtica | Cola más ligera que la normal |
+| $\gamma_2 = 0$ | Mesocúrtica | Igual que la distribución normal |
+
+```{python}
+print(resultado["descriptiva"]["mdf"].to_string(index=False))
+```
+
+\newpage
+
+# Análisis de Frecuencias — Variables Categóricas
+
+```{python}
+cols_cat = df.select_dtypes("object").columns.tolist()
+for col in cols_cat:
+    tabla = resultado["frecuencias"][col]
+    print(f"\n{'='*55}")
+    print(f"Variable: {col}")
+    moda = df[col].dropna().value_counts().idxmax()
+    print(f"Moda: {moda}")
+    print(tabla.head(8).to_string())
+```
+
+\newpage
+
+# Visualizaciones
+
+## Variables numéricas
+
+```{python}
+#| fig-cap: "Histogramas de variables numéricas"
+#| fig-width: 7
+#| fig-height: 7
+
+cuant_cols = df.select_dtypes("number").columns.tolist()
+ncols = 2
+nrows = int(np.ceil(len(cuant_cols) / ncols))
+
+fig, axes = plt.subplots(nrows, ncols, figsize=(10, 4 * nrows), facecolor="white")
+axes = np.array(axes).flatten()
+
+for i, col in enumerate(cuant_cols):
+    ax = axes[i]
+    datos = df[col].dropna().values
+    color = PALETTE[i % len(PALETTE)]
+    ax.hist(datos, bins=30, color=color, alpha=0.8, edgecolor="white", linewidth=0.5)
+    ax.set_title(f"{col}", fontsize=10, fontweight="bold")
+    ax.set_xlabel(col, fontsize=8)
+    ax.set_ylabel("Frecuencia", fontsize=8)
+
+for j in range(i + 1, len(axes)):
+    axes[j].set_visible(False)
+
+fig.suptitle("Histogramas — Variables Numéricas", fontsize=13, fontweight="bold", y=1.01)
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| fig-cap: "Curvas de densidad KDE"
+#| fig-width: 7
+#| fig-height: 7
+
+fig, axes = plt.subplots(nrows, ncols, figsize=(10, 4 * nrows), facecolor="white")
+axes = np.array(axes).flatten()
+
+def kde_manual(datos, n_puntos=300):
+    n = len(datos)
+    h = 1.06 * np.std(datos) * n ** (-1/5)
+    x = np.linspace(datos.min(), datos.max(), n_puntos)
+    y = np.array([
+        np.sum(np.exp(-0.5 * ((xi - datos) / h) ** 2))
+        / (n * h * np.sqrt(2 * np.pi))
+        for xi in x
+    ])
+    return x, y
+
+for i, col in enumerate(cuant_cols):
+    ax = axes[i]
+    datos = df[col].dropna().values
+    color = PALETTE[i % len(PALETTE)]
+    x, y = kde_manual(datos)
+    ax.plot(x, y, color=color, linewidth=2)
+    ax.fill_between(x, y, alpha=0.15, color=color)
+    ax.set_title(f"{col}", fontsize=10, fontweight="bold")
+    ax.set_xlabel(col, fontsize=8)
+    ax.set_ylabel("Densidad", fontsize=8)
+
+for j in range(i + 1, len(axes)):
+    axes[j].set_visible(False)
+
+fig.suptitle("Curvas KDE — Variables Numéricas", fontsize=13, fontweight="bold", y=1.01)
+plt.tight_layout()
+plt.show()
+```
+
+```{python}
+#| fig-cap: "Boxplots de variables numéricas"
+#| fig-width: 7
+#| fig-height: 7
+
+fig, axes = plt.subplots(nrows, ncols, figsize=(10, 4 * nrows), facecolor="white")
+axes = np.array(axes).flatten()
+
+for i, col in enumerate(cuant_cols):
+    ax = axes[i]
+    datos = df[col].dropna()
+    color = PALETTE[i % len(PALETTE)]
+    bp = ax.boxplot(
+        datos, patch_artist=True, notch=False,
+        medianprops=dict(color="#333333", linewidth=2),
+        whiskerprops=dict(color="#555555"),
+        capprops=dict(color="#555555"),
+        flierprops=dict(marker="o", color=color, alpha=0.3, markersize=2),
+    )
+    bp["boxes"][0].set_facecolor(color)
+    bp["boxes"][0].set_alpha(0.5)
+    ax.set_title(f"{col}", fontsize=10, fontweight="bold")
+    ax.set_ylabel("Valores", fontsize=8)
+    ax.set_xticks([])
+
+for j in range(i + 1, len(axes)):
+    axes[j].set_visible(False)
+
+fig.suptitle("Boxplots — Variables Numéricas", fontsize=13, fontweight="bold", y=1.01)
+plt.tight_layout()
+plt.show()
+```
+
+## Variables categóricas
+
+```{python}
+#| fig-cap: "Top 10 categorías por variable cualitativa"
+#| fig-width: 7
+
+for i, col in enumerate(cols_cat):
+    top = df[col].value_counts().head(10).sort_values()
+    color = PALETTE[i % len(PALETTE)]
+
+    fig, ax = plt.subplots(figsize=(9, max(3, len(top) * 0.45)), facecolor="white")
+    bars = ax.barh(top.index.astype(str), top.values, color=color, alpha=0.8,
+                   edgecolor="white", height=0.65)
+
+    for j, bar in enumerate(bars):
+        bar.set_alpha(0.45 + 0.55 * j / len(bars))
+
+    margen = top.max() * 0.01
+    for bar, val in zip(bars, top.values):
+        ax.text(bar.get_width() + margen, bar.get_y() + bar.get_height() / 2,
+                f"{val:,}", va="center", fontsize=7, fontweight="bold", color="#333333")
+
+    ax.set_title(f"Top 10 — {col}", fontsize=10, fontweight="bold")
+    ax.set_xlabel("Frecuencia absoluta", fontsize=8)
+    ax.set_xlim(0, top.max() * 1.2)
+    ax.tick_params(axis="y", labelsize=7)
+    plt.tight_layout()
+    plt.show()
+```
+
+\newpage
+
+# Hallazgos del Análisis
+
+## Concentración territorial
+
+Los cinco departamentos con mayor cantidad de registros son **Antioquia** (9,572), **Boyacá** (9,420), **Cundinamarca** (8,890), **Santander** (6,684) y **Nariño** (4,936). Estos departamentos concentran más del 45% de los registros totales, lo que refleja su relevancia histórica como territorios con alta incidencia del conflicto armado y mayor capacidad institucional de reporte.
+
+La distribución del Código Departamento presenta **asimetría positiva** ($\gamma_1 = 0.44$) y **curtosis platicúrtica** ($\gamma_2 = -1.14$), indicando que los registros se distribuyen con mayor peso en departamentos de código bajo (principalmente de la región Andina) y con una dispersión uniforme sin picos pronunciados.
+
+## Homogeneidad temática
+
+El dataset es **temáticamente homogéneo**: la variable Dimensión tiene un único valor (`Paz y víctimas`) en los 86,134 registros. Los indicadores más frecuentes son los **Eventos de Minas Antipersonal** (22,700 registros), las **Hectáreas de cultivo de coca** (22,700) y el **Índice de Incidencia del Conflicto Armado — IICA** (5,675), concentrando entre los tres más del 59% de todos los registros.
+
+## Tendencia temporal reciente
+
+La cobertura temporal abarca 2002–2023, pero la distribución presenta **asimetría negativa** ($\gamma_1 = -0.74$), con concentración en los años recientes. Los años con más registros son 2023 (13,494), 2022 (11,350) y 2018–2020 (5,675 cada uno). Esto es consistente con el fortalecimiento del sistema de monitoreo pos-acuerdo de paz de 2016 y el aumento de la capacidad institucional de reporte territorial.
+
+## Estacionalidad del reporte
+
+La variable Mes presenta la distribución más inusual: **asimetría negativa pronunciada** ($\gamma_1 = -2.49$) y **curtosis leptocúrtica** ($\gamma_2 = 4.42$). Los cuartiles Q1, Q2 y Q3 coinciden todos en el mes 12 (diciembre). Esto confirma que la gran mayoría de los indicadores se reportan con **corte anual a diciembre**, no con seguimiento mensual continuo.
+
+## Dispersión de entidades reportantes
+
+El Código Entidad tiene una media de 38,112 con una desviación estándar de 26,019 y un CV del 68.3%, lo que indica **alta heterogeneidad** en el ecosistema institucional reportante. El rango va de 1,001 a 99,773, abarcando entidades de todos los niveles de gobierno.
+
+## Calidad de los datos
+
+Las variables numéricas (`Año`, `Mes`, `Código Departamento`, `Código Entidad`) presentan **cobertura completa** (0% de datos faltantes). Las variables categóricas también muestran cobertura alta, lo que permite un análisis estadístico sin imputación de datos.
+
+\newpage
+
+# Uso de la Librería `analizador`
+
+## Descripción
+
+Como parte del proyecto, el equipo desarrolló la librería `analizador` — un paquete Python modular para análisis estadístico exploratorio de datasets CSV y Excel. La librería está disponible públicamente en:
+
+\begin{center}
+\url{https://github.com/Jserpa02/CD_pythonLibrary}
+\end{center}
+
+## Arquitectura
+
+La librería implementa el principio de **separación de responsabilidades**, con cada módulo encargado de una función específica:
+
+| Módulo | Responsabilidad |
+|---|---|
+| `core.py` | Función orquestadora `analizar()` — coordina todos los módulos |
+| `calidad.py` | Datos faltantes y valores repetidos |
+| `descriptiva.py` | Medidas de tendencia central, dispersión, posición y forma |
+| `frecuencias.py` | Tablas de frecuencia para variables categóricas |
+| `graficos.py` | Histogramas, KDE, boxplots y barras de frecuencia |
+
+## Uso en este trabajo
+
+Todo el análisis estadístico de este informe se realizó mediante una única llamada:
+
+```python
+from analizador import analizar
+
+resultado = analizar(df)
+```
+
+Esta función devuelve un diccionario estructurado con cuatro claves principales:
+
+```python
+resultado["calidad"]      # datos faltantes, valores repetidos
+resultado["descriptiva"]  # mdtc, mdd, mdl, mdf
+resultado["frecuencias"]  # tabla por cada variable categórica
+resultado["graficos"]     # histogramas, kde, boxplots, barras
+```
+
+## Decisiones de diseño relevantes
+
+- **Sin dependencias estadísticas externas**: todas las fórmulas (cuartiles por interpolación lineal, KDE con ancho de banda de Silverman, varianza muestral con corrección de Bessel) están implementadas manualmente en Python puro usando `numpy`, sin depender de `scipy` ni de funciones estadísticas de `pandas`.
+- **Funciones puras**: cada función recibe un `DataFrame` y devuelve un `DataFrame` o una figura `matplotlib.Figure`, sin efectos secundarios ni variables globales.
+- **Instalable vía pip**: cualquier persona puede instalar la librería con `pip install git+https://github.com/Jserpa02/CD_pythonLibrary`.
+
+\newpage
+
+# Referencias
+
+## Dataset
+
+Departamento Nacional de Planeación. (2024). *Terridata — Sistema de Estadísticas Territoriales*. \url{https://terridata.dnp.gov.co/index-app.html#/descargas}
+
+## Estadística descriptiva
+
+Walpole, R. E., Myers, R. H., & Myers, S. L. (2012). *Probability and Statistics for Engineers and Scientists* (9th ed.). Pearson.
+
+Montgomery, D. C., & Runger, G. C. (2014). *Applied Statistics and Probability for Engineers* (6th ed.). Wiley.
+
+Mendenhall, W., Beaver, R. J., & Beaver, B. M. (2013). *Introduction to Probability and Statistics* (14th ed.). Cengage Learning.
+
+## Fórmulas específicas
+
+**Media aritmética y varianza muestral (corrección de Bessel):**
+Spiegel, M. R., & Stephens, L. J. (2008). *Estadística* (4th ed., pp. 77–89). McGraw-Hill.
+
+**Cuartiles por interpolación lineal:**
+Hyndman, R. J., & Fan, Y. (1996). Sample quantiles in statistical packages. *The American Statistician, 50*(4), 361–365. \url{https://doi.org/10.2307/2684934}
+
+**Asimetría y curtosis:**
+Joanes, D. N., & Gill, C. A. (1998). Comparing measures of sample skewness and kurtosis. *Journal of the Royal Statistical Society: Series D, 47*(1), 183–189.
+
+**Estimación de densidad kernel (ancho de banda de Silverman):**
+Silverman, B. W. (1986). *Density Estimation for Statistics and Data Analysis* (pp. 45–48). Chapman & Hall.
+
+## Herramientas
+
+McKinney, W. (2010). Data Structures for Statistical Computing in Python. *Proceedings of the 9th Python in Science Conference*, 56–61.
+
+Harris, C. R., et al. (2020). Array programming with NumPy. *Nature, 585*, 357–362. \url{https://doi.org/10.1038/s41586-020-2649-2}
+
+Hunter, J. D. (2007). Matplotlib: A 2D graphics environment. *Computing in Science & Engineering, 9*(3), 90–95.
+
+Allaire, J. J., et al. (2024). *Quarto* (Version 1.4). \url{https://quarto.org}
+
+Codigo fuente de este informe en \url{https://github.com/Jserpa02/CD_armed_conflict_colombia}
